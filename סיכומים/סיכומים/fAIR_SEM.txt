@@ -1,0 +1,45 @@
+import java.util.ArrayList;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+public class fairSemaphore {
+
+	private Lock lock ;
+	private Condition cond ; 
+	private int count;
+	private ArrayList<Long> waiting;
+	private long lastExit;
+
+	public fairSemaphore(int value) {
+		this.count = value;
+		lock = new ReentrantLock();
+		cond = lock.newCondition();
+		waiting = new ArrayList<>();
+		lastExit = 0;
+	}
+
+	void down(){
+		lock.lock();
+		count --;
+		if(count < 0){
+			waiting.add( Thread.currentThread().getId());
+			while(lastExit != Thread.currentThread().getId()){
+				try {
+					cond.await();
+				} catch (InterruptedException e) {}
+			}
+		}
+		lock.unlock();
+	}
+	
+	void up(){
+		lock.lock();
+		count++;
+		if(count <= 0){
+			lastExit = waiting.remove(0);
+			cond.signalAll();
+		}
+		lock.unlock();
+	}
+}

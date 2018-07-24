@@ -1,0 +1,61 @@
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+public class DoubleSemaphore {
+
+	private int waiting ;
+	private int counter;
+	private Lock lock;
+	private Condition cond;
+
+	public DoubleSemaphore() {
+		waiting = 0;
+		counter = 0; 
+		lock = new ReentrantLock();
+		cond = lock.newCondition();
+	}
+
+	void down(){
+		lock.lock();
+		waiting++;
+		if(waiting == 1){
+			try {
+				cond.await();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}else if(waiting > 2){
+			try {
+				cond.await();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}else{
+			cond.signal();
+		}
+		lock.unlock();
+	}
+	
+	
+	void up(){
+		lock.lock();
+		counter++;
+		if (counter == 2){
+			counter = 0;
+			waiting -= 2;
+			if(waiting != 1){
+				cond.signal();
+				cond.signal();
+			}
+		}
+		lock.unlock();
+	}
+
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	}
+
+}

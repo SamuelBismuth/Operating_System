@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <pthread.h>
 #include <semaphore.h>
+
 typedef struct args{
     sem_t mutex;
     sem_t* mArr;
@@ -9,7 +10,9 @@ typedef struct args{
     int * aA_arr;
     int  aArr_Size;
 }Args;
+
 void *(*start_routine) (void *);
+
 void * f(void * args){
     Args* arg=(Args*)args;
     int id=arg->id;
@@ -23,9 +26,8 @@ void * f(void * args){
     pthread_cancel(pthread_self());
     return 0;
 }
+
 int main() {
-    printf("hi\n");
-    fflush(stdout);
     start_routine=f;
     pthread_t tArr[5];
     sem_t sArr[5];
@@ -38,8 +40,6 @@ int main() {
         else
             sem_init(&sArr[j],0,0);
     }
-    printf("hi\n");
-    fflush(stdout);
     for (int i = 0; i < 5; ++i) {
         Args arg;
         arg.id=i;
@@ -50,9 +50,8 @@ int main() {
         arg.mutex=mutex;
         pthread_create(&tArr[i],NULL,f,&arg);
         pthread_join(tArr[i],NULL);
-
     }
-   
-    printf("Hello, World!,%d\n",arr[4]);
+    printf("%d\n",arr[4]);
+    fflush(stdout);
     return 0;
 }

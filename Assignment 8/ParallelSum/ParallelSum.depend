@@ -1,0 +1,10 @@
+# depslib dependency file v1.0
+1528189068 source:/home/sam/Desktop/OS/Assignment 8/ParallelSum/main.c
+	<stdio.h>
+	<stdlib.h>
+	<pthread.h>
+	<semaphore.h>
+	<sys/types.h>
+	<unistd.h>
+	<sys/mman.h>
+
